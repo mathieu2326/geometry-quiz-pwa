@@ -4,136 +4,184 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz de géométrie</title>
-  <!-- Fichier manifest pour transformer le quiz en application installable (PWA) -->
+  <!-- Manifeste pour PWA -->
   <link rel="manifest" href="manifest.json">
-  <!-- CSS intégré pour éviter les restrictions de chargement de fichiers locaux -->
   <style>
+    :root {
+      --primary-color: #4e8cff;
+      --secondary-color: #2c3e50;
+      --background-color: #f5f7fa;
+      --card-bg: #ffffff;
+      --card-shadow: rgba(0, 0, 0, 0.1);
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --primary-color-light: #6ea8ff;
+      --text-color: #212529;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: var(--background-color);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
     }
+
     .container {
-      background-color: #ffffff;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      background-color: var(--card-bg);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px var(--card-shadow);
       width: 100%;
-      max-width: 600px;
+      max-width: 700px;
     }
-    h1 {
-      text-align: center;
+
+    h1, h2 {
       margin-top: 0;
+      text-align: center;
+      color: var(--secondary-color);
     }
-    #question {
-      font-size: 1.2em;
+
+    p.description {
+      text-align: center;
       margin-bottom: 20px;
     }
-    .choice {
-      margin: 8px 0;
-      display: block;
-      width: 100%;
-      background-color: #e7e7e7;
+
+    button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
       border: none;
-      padding: 10px 15px;
-      font-size: 1em;
       border-radius: 5px;
+      background-color: var(--primary-color);
+      color: #fff;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-    .choice:hover {
-      background-color: #d4d4d4;
+
+    button:hover {
+      background-color: #3b6fd6;
     }
+
     .hidden {
       display: none;
     }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 5px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
 
-    /* Styles pour la barre de progression */
-    #progress-text {
-      font-size: 0.9em;
-      margin-bottom: 4px;
-      text-align: right;
-      color: #333;
-    }
+    /* Barre de progression */
     #progress {
-      width: 100%;
       height: 8px;
       background-color: #e0e0e0;
       border-radius: 4px;
       overflow: hidden;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
+
     #progress-bar {
       height: 100%;
-      width: 0;
-      background-color: #4CAF50;
+      width: 0%;
+      background-color: var(--primary-color);
       transition: width 0.3s ease;
     }
 
-    /* Conteneur pour l'animation géométrique et formes animées */
+    #progress-text {
+      text-align: right;
+      font-size: 0.9em;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    #question-container {
+      margin-bottom: 15px;
+    }
+
+    .choice {
+      margin: 10px 0;
+      width: 100%;
+      display: block;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .choice:hover {
+      background-color: #e0e0e0;
+    }
+
+    #explanation {
+      margin-top: 10px;
+      font-style: italic;
+      color: #555;
+    }
+
+    #result-container {
+      text-align: center;
+    }
+
+    #score {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    /* Conteneur pour l'animation de forme */
     #animation-container {
       display: flex;
       justify-content: center;
-      align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       height: 120px;
     }
+
     .shape {
       display: inline-block;
     }
+
     .shape.triangle {
       width: 0;
       height: 0;
       border-left: 50px solid transparent;
       border-right: 50px solid transparent;
-      border-bottom: 100px solid #4CAF50;
+      border-bottom: 100px solid var(--primary-color);
     }
-    .shape.quadrilatere {
+
+    .shape.quadrilataire {
       width: 100px;
       height: 100px;
-      background-color: #4CAF50;
+      background-color: var(--primary-color);
     }
+
     .shape.angle {
       position: relative;
       width: 100px;
       height: 100px;
     }
+
     .shape.angle::before,
     .shape.angle::after {
       content: '';
       position: absolute;
-      background-color: #4CAF50;
+      background-color: var(--primary-color);
     }
+
     .shape.angle::before {
       width: 100px;
       height: 12px;
       top: 44px;
       left: 0;
     }
+
     .shape.angle::after {
       width: 12px;
       height: 100px;
       top: 0;
       left: 44px;
     }
+
     @keyframes rotate {
       from {
         transform: rotate(0deg);
@@ -142,239 +190,437 @@
         transform: rotate(360deg);
       }
     }
+
     .rotate {
       animation: rotate 5s linear infinite;
     }
-    /* Style pour l'explication des réponses */
-    #explanation {
-      margin-top: 10px;
-      font-style: italic;
-      color: #444;
+
+    /* Timer */
+    .timer {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-top: 0.5rem;
+      text-align: right;
+    }
+
+    /* Badge affiché à la fin */
+    .badge {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+
+    /* Table de classement */
+    #leaderboard {
+      margin-top: 1rem;
+    }
+    #score-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #score-table th, #score-table td {
+      border: 1px solid #ddd;
+      padding: 4px 6px;
+      text-align: center;
+    }
+    #score-table th {
+      background-color: var(--primary-color);
+      color: #fff;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Quiz de géométrie</h1>
-    <!-- Barre de progression affichant l'avancement du quiz -->
-    <div id="progress-text"></div>
-    <div id="progress">
-      <div id="progress-bar"></div>
-    </div>
-    <div id="quiz-container">
-      <div id="animation-container"></div>
-      <div id="question-container">
-        <p id="question"></p>
+    <!-- Écran d'introduction -->
+    <div id="intro-container">
+      <h1>Quiz de géométrie</h1>
+      <p class="description">Testez vos connaissances sur les triangles, quadrilatères et angles avec 25 questions amusantes et apprenez en chemin !</p>
+      <!-- Options de personnalisation -->
+      <div id="settings">
+        <h2>Personnalisation</h2>
+        <div class="themes">
+          <label>Choisissez un thème&nbsp;:</label>
+          <button class="theme-option" data-theme="light">Clair</button>
+          <button class="theme-option" data-theme="dark">Sombre</button>
+        </div>
+        <div class="premium-option">
+          <input type="checkbox" id="premium-toggle">
+          <label for="premium-toggle">Activer le mode premium (ajoute des questions)</label>
+        </div>
       </div>
-      <div id="choices-container"></div>
-      <p id="explanation" class="hidden"></p>
-      <button id="next-btn" class="hidden">Question suivante</button>
+      <button id="start-btn">Commencer le quiz</button>
     </div>
+
+    <!-- Section du quiz (cachée au départ) -->
+    <div id="quiz-section" class="hidden">
+      <div id="progress">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="progress-text"></div>
+      <!-- Compteur de temps pour chaque question -->
+      <div id="timer" class="timer hidden"></div>
+      <div id="quiz-container">
+        <div id="animation-container"></div>
+        <div id="question-container">
+          <p id="question"></p>
+        </div>
+        <div id="choices-container"></div>
+        <p id="explanation" class="hidden"></p>
+        <button id="next-btn" class="hidden">Question suivante</button>
+      </div>
+    </div>
+
+    <!-- Section des résultats -->
     <div id="result-container" class="hidden">
+      <h2>Résultats</h2>
       <p id="score"></p>
+      <!-- Badge obtenu en fonction du score -->
+      <p id="badge" class="badge"></p>
+      <!-- Classement local basé sur le stockage local -->
+      <div id="leaderboard" class="hidden">
+        <h3>Classement local</h3>
+        <table id="score-table">
+          <thead>
+            <tr><th>Rang</th><th>Date</th><th>Score</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
       <button id="restart-btn">Recommencer</button>
     </div>
   </div>
-  <!-- Script intégré pour éviter les restrictions de chargement de fichiers locaux -->
+
   <script>
+    // Liste des questions (25 questions)
     const questions = [
       {
-        question: "La somme des angles intérieurs d'un triangle est :",
+        question: "La somme des angles intérieurs d'un triangle est :",
         type: "triangle",
         choices: ["90°", "180°", "360°", "270°"],
         answer: "180°",
         explanation: "La somme des angles intérieurs d'un triangle est toujours 180° en géométrie plane."
       },
       {
-        question: "Combien de côtés a un quadrilatère ?",
-        type: "quadrilatere",
+        question: "Combien de côtés a un quadrilatère ?",
+        type: "quadrilataire",
         choices: ["3", "4", "5", "6"],
         answer: "4",
-        explanation: "Un quadrilatère possède quatre côtés, comme indiqué par son préfixe \"quadri-\"."
+        explanation: "Un quadrilatère possède quatre côtés, comme l'indique son préfixe \"quadri-\"."
       },
       {
-        question: "Un angle droit mesure combien de degrés ?",
-        type: "angle",
-        choices: ["45°", "60°", "90°", "120°"],
-        answer: "90°",
-        explanation: "Un angle droit correspond à 90°, c'est l'angle d'un coin de carré."
-      },
-      {
-        question: "Les côtés opposés d'un rectangle sont :",
-        type: "quadrilatere",
-        choices: ["égaux et parallèles", "perpendiculaires", "courbes", "irréguliers"],
-        answer: "égaux et parallèles",
-        explanation: "Dans un rectangle, les côtés opposés sont parallèles et de même longueur."
-      },
-      {
-        question: "Un triangle équilatéral a combien de côtés égaux ?",
-        type: "triangle",
-        choices: ["2", "3", "4", "5"],
-        answer: "3",
-        explanation: "Un triangle équilatéral a trois côtés de même longueur, donc trois côtés égaux."
-      },
-      {
-        question: "Quelle est la somme des angles intérieurs d'un quadrilatère ?",
-        type: "quadrilatere",
+        question: "La somme des angles intérieurs d'un quadrilatère est :",
+        type: "quadrilataire",
         choices: ["180°", "270°", "360°", "540°"],
         answer: "360°",
         explanation: "Les quatre angles d'un quadrilatère totalisent 360°."
       },
       {
-        question: "Un carré est un type particulier de :",
-        type: "quadrilatere",
+        question: "Un carré est un type particulier de :",
+        type: "quadrilataire",
         choices: ["parallélogramme", "triangle", "pentagone", "trapèze"],
         answer: "parallélogramme",
-        explanation: "Un carré est un parallélogramme particulier avec quatre côtés égaux et quatre angles droits."
+        explanation: "Un carré est un parallélogramme particulier avec des côtés égaux et quatre angles droits."
       },
       {
-        question: "Combien d'angles droits possède un carré ?",
-        type: "quadrilatere",
+        question: "Combien d'angles droits possède un carré ?",
+        type: "quadrilataire",
         choices: ["1", "2", "3", "4"],
         answer: "4",
         explanation: "Les quatre coins d'un carré sont tous des angles droits."
       },
       {
-        question: "Un triangle isocèle a au moins combien de côtés égaux ?",
+        question: "Un triangle isocèle a au moins combien de côtés égaux ?",
         type: "triangle",
         choices: ["1", "2", "3", "4"],
         answer: "2",
-        explanation: "Un triangle isocèle a au moins deux côtés de même longueur."
+        explanation: "Un triangle isocèle a au moins deux côtés de la même longueur."
       },
       {
-        question: "Dans un triangle rectangle, l'hypoténuse est :",
+        question: "Dans un triangle rectangle, l'hypoténuse est :",
         type: "triangle",
         choices: ["le côté le plus long", "le côté le plus court", "un angle", "un point"],
         answer: "le côté le plus long",
         explanation: "Dans un triangle rectangle, l'hypoténuse est le côté opposé à l'angle droit et c'est le plus long."
       },
       {
-        question: "Un quadrilatère dont une seule paire de côtés opposés est parallèle s'appelle :",
-        type: "quadrilatere",
+        question: "Un quadrilatère dont une seule paire de côtés opposés est parallèle s'appelle :",
+        type: "quadrilataire",
         choices: ["trapèze", "rectangle", "carré", "losange"],
         answer: "trapèze",
-        explanation: "Un trapèze n'a qu'une seule paire de côtés parallèles, contrairement au parallélogramme."
+        explanation: "Un trapèze a uniquement une paire de côtés parallèles, contrairement aux parallélogrammes."
       },
       {
-        question: "Combien de diagonales possède un quadrilatère ?",
-        type: "quadrilatere",
-        choices: ["1", "2", "3", "4"],
-        answer: "2",
-        explanation: "Un quadrilatère possède deux diagonales reliant ses sommets opposés."
-      },
-      {
-        question: "Dans un triangle scalène, les côtés sont :",
-        type: "triangle",
-        choices: ["tous différents", "tous égaux", "deux égaux", "pas de côtés"],
-        answer: "tous différents",
-        explanation: "Dans un triangle scalène, les trois côtés ont des longueurs différentes."
-      },
-      {
-        question: "Un angle obtus est un angle de :",
-        type: "angle",
-        choices: ["plus de 90°", "exactement 90°", "moins de 90°", "180°"],
-        answer: "plus de 90°",
-        explanation: "Un angle obtus est un angle qui mesure plus de 90°."
-      },
-      {
-        question: "Comment s'appelle un quadrilatère aux quatre côtés de même longueur mais pas forcément à angles droits ?",
-        type: "quadrilatere",
-        choices: ["losange", "rectangle", "carré", "trapèze"],
-        answer: "losange",
-        explanation: "Un losange est un quadrilatère dont les quatre côtés sont de même longueur sans imposer d'angles droits."
-      },
-      {
-        question: "La somme des angles adjacents sur une ligne droite est :",
-        type: "angle",
-        choices: ["90°", "180°", "270°", "360°"],
-        answer: "180°",
-        explanation: "Deux angles adjacents formant une ligne droite totalisent 180°."
-      },
-      {
-        question: "Combien d'axes de symétrie possède un rectangle ?",
-        type: "quadrilatere",
+        question: "Combien d'axes de symétrie possède un rectangle ?",
+        type: "quadrilataire",
         choices: ["1", "2", "3", "4"],
         answer: "2",
         explanation: "Un rectangle possède deux axes de symétrie : un horizontal et un vertical."
       },
       {
-        question: "Si deux côtés d'un triangle sont égaux, il est :",
+        question: "Si deux côtés d'un triangle sont égaux, il est :",
         type: "triangle",
         choices: ["équilatéral", "isocèle", "scalène", "rectangle"],
         answer: "isocèle",
         explanation: "Un triangle avec deux côtés égaux est un triangle isocèle."
       },
       {
-        question: "Un angle aigu est un angle de :",
+        question: "Un angle aigu est un angle de :",
         type: "angle",
         choices: ["moins de 90°", "plus de 90°", "exactement 90°", "plus de 180°"],
         answer: "moins de 90°",
         explanation: "Un angle aigu est un angle mesurant moins de 90°."
       },
       {
-        question: "Un triangle ayant un angle de 90° est appelé :",
+        question: "Un triangle ayant un angle de 90° est appelé :",
         type: "triangle",
         choices: ["triangle obtus", "triangle aigu", "triangle rectangle", "triangle scalène"],
         answer: "triangle rectangle",
         explanation: "Un triangle ayant un angle de 90° est appelé triangle rectangle."
       },
       {
-        question: "Comment s'appelle un quadrilatère avec deux paires de côtés parallèles et des angles pas nécessairement à 90° ?",
-        type: "quadrilatere",
+        question: "Comment s'appelle un quadrilatère avec deux paires de côtés parallèles et des angles pas nécessairement à 90° ?",
+        type: "quadrilataire",
         choices: ["parallélogramme", "trapèze", "carré", "rectangle"],
         answer: "parallélogramme",
         explanation: "Un parallélogramme a deux paires de côtés parallèles, contrairement au trapèze."
       },
       {
-        question: "Dans un losange, les diagonales sont :",
-        type: "quadrilatere",
-        choices: ["perpendiculaires", "parallèles", "égales", "aucune de ces réponses"],
-        answer: "perpendiculaires",
-        explanation: "Dans un losange, les diagonales se coupent à angle droit : elles sont perpendiculaires."
-      },
-      {
-        question: "Dans un rectangle, les diagonales sont :",
-        type: "quadrilatere",
-        choices: ["égales", "perpendiculaires", "parallèles", "aucune de ces réponses"],
-        answer: "égales",
-        explanation: "Dans un rectangle, les deux diagonales ont exactement la même longueur."
-      },
-      {
-        question: "Dans un triangle équilatéral, chaque angle mesure :",
+        question: "Quel type de triangle a trois côtés de longueurs différentes ?",
         type: "triangle",
-        choices: ["45°", "60°", "90°", "120°"],
-        answer: "60°",
-        explanation: "Dans un triangle équilatéral, les trois angles sont égaux et valent 60° chacun."
+        choices: ["équilatéral", "isocèle", "scalène", "rectangle"],
+        answer: "scalène",
+        explanation: "Un triangle scalène a trois côtés de longueurs différentes."
       },
       {
-        question: "Un angle plat mesure :",
+        question: "Combien de diagonales a un quadrilatère ?",
+        type: "quadrilataire",
+        choices: ["1", "2", "3", "4"],
+        answer: "2",
+        explanation: "Tous les quadrilatères ont deux diagonales qui relient les sommets opposés."
+      },
+      {
+        question: "Si toutes les côtés d'un quadrilatère sont égaux et les angles droits, c'est un :",
+        type: "quadrilataire",
+        choices: ["losange", "carré", "rectangle", "trapèze"],
+        answer: "carré",
+        explanation: "Un carré a quatre côtés égaux et quatre angles droits."
+      },
+      {
+        question: "Un angle qui mesure exactement 90° est appelé :",
         type: "angle",
-        choices: ["180°", "90°", "360°", "45°"],
-        answer: "180°",
-        explanation: "Un angle plat correspond à un angle de 180°."
+        choices: ["aigu", "droit", "obtus", "plat"],
+        answer: "droit",
+        explanation: "Un angle droit mesure exactement 90°."
+      },
+      {
+        question: "Quel type de quadrilatère a quatre côtés de même longueur mais pas forcément quatre angles droits ?",
+        type: "quadrilataire",
+        choices: ["losange", "rectangle", "carré", "trapèze"],
+        answer: "losange",
+        explanation: "Un losange a quatre côtés égaux, mais ses angles ne sont pas forcément droits."
+      },
+      {
+        question: "Combien d'angles possède un triangle ?",
+        type: "triangle",
+        choices: ["2", "3", "4", "5"],
+        answer: "3",
+        explanation: "Un triangle a trois angles."
+      },
+      {
+        question: "Quel est le terme pour un angle mesurant plus de 180° mais moins de 360° ?",
+        type: "angle",
+        choices: ["aigu", "obtus", "réflexe", "droit"],
+        answer: "réflexe",
+        explanation: "Un angle réflexe mesure plus de 180° mais moins de 360°."
+      },
+      {
+        question: "Un quadrilatère avec quatre angles droits et des côtés opposés de même longueur est un :",
+        type: "quadrilataire",
+        choices: ["rectangle", "carré", "losange", "trapèze"],
+        answer: "rectangle",
+        explanation: "Un rectangle a quatre angles droits et ses côtés opposés sont de même longueur."
+      },
+      {
+        question: "Un triangle équilatéral a :",
+        type: "triangle",
+        choices: ["trois côtés égaux", "deux côtés égaux", "un côté égal", "aucun côté égal"],
+        answer: "trois côtés égaux",
+        explanation: "Un triangle équilatéral a trois côtés égaux et trois angles égaux."
+      },
+      {
+        question: "La somme des angles d'un quadrilatère est :",
+        type: "quadrilataire",
+        choices: ["180°", "270°", "360°", "540°"],
+        answer: "360°",
+        explanation: "Les angles d'un quadrilatère totalisent 360°."
+      },
+      {
+        question: "Combien de côtés a un pentagone ?",
+        type: "angle",
+        choices: ["4", "5", "6", "7"],
+        answer: "5",
+        explanation: "Un pentagone possède cinq côtés."
+      },
+      {
+        question: "Quel type d'angle mesure plus de 90° mais moins de 180° ?",
+        type: "angle",
+        choices: ["aigu", "obtus", "droit", "plat"],
+        answer: "obtus",
+        explanation: "Un angle obtus mesure plus de 90° mais moins de 180°."
+      },
+      {
+        question: "Un triangle avec deux côtés égaux et un angle droit est :",
+        type: "triangle",
+        choices: ["isocèle rectangle", "équilatéral", "scalène", "obtus"],
+        answer: "isocèle rectangle",
+        explanation: "Un triangle isocèle rectangle a deux côtés égaux et un angle de 90°."
+      },
+      {
+        question: "Comment s'appelle un quadrilatère dont les diagonales sont perpendiculaires et de même longueur ?",
+        type: "quadrilataire",
+        choices: ["carré", "rectangle", "losange", "trapèze"],
+        answer: "carré",
+        explanation: "Dans un carré, les diagonales sont perpendiculaires et de même longueur."
+      },
+      {
+        question: "Quel est le nom d'un angle mesurant exactement 180° ?",
+        type: "angle",
+        choices: ["droit", "obtus", "plat", "réflexe"],
+        answer: "plat",
+        explanation: "Un angle plat mesure exactement 180°."
+      }
+    ];
+
+    // Questions supplémentaires pour le mode premium
+    const premiumQuestions = [
+      {
+        question: "Comment nomme-t-on un polygone à cinq côtés ?",
+        type: "quadrilataire",
+        choices: ["triangle", "pentagone", "hexagone", "quadrilatère"],
+        answer: "pentagone",
+        explanation: "Un polygone à cinq côtés est un pentagone."
+      },
+      {
+        question: "Quelle droite relie un sommet d'un triangle au milieu du côté opposé ?",
+        type: "triangle",
+        choices: ["hauteur", "médiane", "bissectrice", "diagonale"],
+        answer: "médiane",
+        explanation: "La médiane relie un sommet au milieu du côté opposé."
+      },
+      {
+        question: "La somme des angles intérieurs d'un quadrilatère est :",
+        type: "quadrilataire",
+        choices: ["180°", "360°", "270°", "90°"],
+        answer: "360°",
+        explanation: "La somme des angles intérieurs d'un quadrilatère est 360° en géométrie plane."
+      },
+      {
+        question: "Quelle est la mesure en degrés d'un angle au centre correspondant à un quart de cercle ?",
+        type: "angle",
+        choices: ["45°", "90°", "180°", "60°"],
+        answer: "90°",
+        explanation: "Un quart de cercle correspond à un angle au centre de 90°."
+      },
+      {
+        question: "Comment appelle-t-on un quadrilatère dont un seul couple de côtés opposés est parallèle ?",
+        type: "quadrilataire",
+        choices: ["carré", "trapèze", "parallélogramme", "losange"],
+        answer: "trapèze",
+        explanation: "Le trapèze est défini par un seul couple de côtés parallèles."
       }
     ];
 
     let shuffledQuestions;
-    let currentQuestionIndex;
-    let score;
-    const questionElement = document.getElementById('question');
-    const choicesContainer = document.getElementById('choices-container');
-    const nextButton = document.getElementById('next-btn');
-    const resultContainer = document.getElementById('result-container');
-    const scoreElement = document.getElementById('score');
-    const restartButton = document.getElementById('restart-btn');
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let premiumEnabled = false;
+
+    // Timer variables
+    const TIME_LIMIT = 20; // seconds per question
+    let timeLeft = TIME_LIMIT;
+    let timerInterval;
+
+    const introContainer = document.getElementById('intro-container');
+    const quizSection = document.getElementById('quiz-section');
     const progressBar = document.getElementById('progress-bar');
     const progressText = document.getElementById('progress-text');
-    const animationContainer = document.getElementById('animation-container');
+    const questionElement = document.getElementById('question');
+    const choicesContainer = document.getElementById('choices-container');
     const explanationElement = document.getElementById('explanation');
+    const nextButton = document.getElementById('next-btn');
+    const resultContainerEl = document.getElementById('result-container');
+    const scoreElement = document.getElementById('score');
+    const restartButton = document.getElementById('restart-btn');
+    const animationContainer = document.getElementById('animation-container');
+    const timerEl = document.getElementById('timer');
+
+    // Paramètres de personnalisation
+    const themeButtons = document.querySelectorAll('.theme-option');
+    const premiumToggle = document.getElementById('premium-toggle');
+
+    document.getElementById('start-btn').addEventListener('click', startQuiz);
+    restartButton.addEventListener('click', startQuiz);
+
+    // Appliquer un thème enregistré lors du chargement de la page
+    document.addEventListener('DOMContentLoaded', () => {
+      const storedTheme = localStorage.getItem('quizTheme');
+      if (storedTheme) applyTheme(storedTheme);
+      const storedPremium = localStorage.getItem('premiumMode');
+      premiumEnabled = storedPremium === 'true';
+      if (premiumEnabled) {
+        premiumToggle.checked = true;
+      }
+    });
+
+    // Gestion des thèmes
+    themeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.dataset.theme;
+        applyTheme(theme);
+        localStorage.setItem('quizTheme', theme);
+      });
+    });
+
+    // Gestion du mode premium
+    premiumToggle.addEventListener('change', (e) => {
+      premiumEnabled = e.target.checked;
+      localStorage.setItem('premiumMode', premiumEnabled);
+    });
+
+    function applyTheme(theme) {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.style.setProperty('--primary-color', '#8e44ad');
+        root.style.setProperty('--primary-color-light', '#9b59b6');
+        root.style.setProperty('--background-color', '#2c3e50');
+        root.style.setProperty('--text-color', '#ecf0f1');
+        root.style.setProperty('--success-color', '#16a085');
+        root.style.setProperty('--danger-color', '#c0392b');
+      } else {
+        // Theme clair par défaut
+        root.style.setProperty('--primary-color', '#4263eb');
+        root.style.setProperty('--primary-color-light', '#5c7cfa');
+        root.style.setProperty('--background-color', '#f8f9fa');
+        root.style.setProperty('--text-color', '#212529');
+        root.style.setProperty('--success-color', '#0ca678');
+        root.style.setProperty('--danger-color', '#e03131');
+      }
+    }
 
     function startQuiz() {
+      introContainer.classList.add('hidden');
+      resultContainerEl.classList.add('hidden');
+      quizSection.classList.remove('hidden');
+      nextButton.innerText = 'Question suivante';
       currentQuestionIndex = 0;
       score = 0;
-      resultContainer.classList.add('hidden');
-      document.getElementById('quiz-container').classList.remove('hidden');
-      shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+      progressBar.style.width = '0%';
+      progressText.innerText = '';
+      // Construire la liste de questions en fonction du mode premium
+      const baseQuestions = questions.slice();
+      const allQuestions = premiumEnabled ? baseQuestions.concat(premiumQuestions) : baseQuestions;
+      shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
       showQuestion();
     }
 
@@ -382,73 +628,155 @@
       resetState();
       const currentQuestion = shuffledQuestions[currentQuestionIndex];
       questionElement.innerText = `Question ${currentQuestionIndex + 1} : ${currentQuestion.question}`;
-      // Mise à jour de la barre de progression et du texte
       const percent = (currentQuestionIndex) / shuffledQuestions.length * 100;
       progressBar.style.width = `${percent}%`;
       progressText.innerText = `${currentQuestionIndex + 1}/${shuffledQuestions.length}`;
-      // Affiche la forme animée correspondante à la question
       showAnimation(currentQuestion.type);
-      currentQuestion.choices.forEach((choice) => {
+      currentQuestion.choices.forEach(choice => {
         const button = document.createElement('button');
         button.innerText = choice;
         button.classList.add('choice');
         if (choice === currentQuestion.answer) {
-          button.dataset.correct = true;
+          button.dataset.correct = 'true';
         }
         button.addEventListener('click', selectAnswer);
         choicesContainer.appendChild(button);
       });
+      // Reset and start timer for this question
+      timeLeft = TIME_LIMIT;
+      timerEl.innerText = `${timeLeft}s`;
+      timerEl.classList.remove('hidden');
+      startTimer();
     }
 
     function resetState() {
       nextButton.classList.add('hidden');
+      explanationElement.classList.add('hidden');
+      explanationElement.innerText = '';
+      animationContainer.innerHTML = '';
       while (choicesContainer.firstChild) {
         choicesContainer.removeChild(choicesContainer.firstChild);
       }
-      // Masque l'explication et vide son contenu
-      explanationElement.classList.add('hidden');
-      explanationElement.innerText = '';
-      // Efface l'animation précédente
-      animationContainer.innerHTML = '';
+      // Stop timer
+      clearInterval(timerInterval);
+      timerEl.classList.add('hidden');
     }
 
     function selectAnswer(e) {
       const selectedButton = e.target;
-      const correct = selectedButton.dataset.correct;
-      Array.from(choicesContainer.children).forEach((button) => {
-        setStatusClass(button, button.dataset.correct);
+      const correct = selectedButton.dataset.correct === 'true';
+      Array.from(choicesContainer.children).forEach(button => {
+        setStatusClass(button, button.dataset.correct === 'true');
         button.disabled = true;
       });
-      if (correct) {
-        score++;
-      }
-      // Affiche l'explication de la réponse après la sélection
+      if (correct) score++;
       const currentQuestion = shuffledQuestions[currentQuestionIndex];
       explanationElement.innerText = currentQuestion.explanation;
       explanationElement.classList.remove('hidden');
+      // Stop timer when answer is selected
+      clearInterval(timerInterval);
       if (currentQuestionIndex < shuffledQuestions.length - 1) {
+        nextButton.innerText = 'Question suivante';
         nextButton.classList.remove('hidden');
       } else {
-        showScore();
+        nextButton.innerText = 'Voir les résultats';
+        nextButton.classList.remove('hidden');
       }
     }
 
-    // Affiche une forme animée en fonction du type de question (triangle, quadrilatère, angle)
-    function showAnimation(type) {
-      animationContainer.innerHTML = '';
-      if (!type) return;
-      const shapeEl = document.createElement('div');
-      shapeEl.classList.add('shape', type, 'rotate');
-      animationContainer.appendChild(shapeEl);
+    // Start countdown timer
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = `${timeLeft}s`;
+        // Change color when time is low
+        if (timeLeft <= 5) {
+          timerEl.style.color = 'var(--danger-color)';
+        } else {
+          timerEl.style.color = 'var(--primary-color)';
+        }
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          handleTimeOut();
+        }
+      }, 1000);
     }
+
+    // Handle when time runs out
+    function handleTimeOut() {
+      // Disable answer buttons
+      Array.from(choicesContainer.children).forEach(button => {
+        setStatusClass(button, button.dataset.correct === 'true');
+        button.disabled = true;
+      });
+      const currentQuestion = shuffledQuestions[currentQuestionIndex];
+      // Show explanation even if no answer selected
+      explanationElement.innerText = currentQuestion.explanation;
+      explanationElement.classList.remove('hidden');
+      // Move to next question or show score
+      if (currentQuestionIndex < shuffledQuestions.length - 1) {
+        nextButton.innerText = 'Question suivante';
+        nextButton.classList.remove('hidden');
+      } else {
+        nextButton.innerText = 'Voir les résultats';
+        nextButton.classList.remove('hidden');
+      }
+    }
+
+    // Enregistrer le score dans le stockage local
+    function saveScore(percentage) {
+      const scores = JSON.parse(localStorage.getItem('quizScores') || '[]');
+      const date = new Date();
+      scores.push({
+        date: date.toLocaleDateString('fr-CA') + ' ' + date.toLocaleTimeString('fr-CA'),
+        score: percentage
+      });
+      // Conserver seulement les 5 meilleurs scores
+      scores.sort((a, b) => b.score - a.score);
+      const topScores = scores.slice(0, 5);
+      localStorage.setItem('quizScores', JSON.stringify(topScores));
+    }
+
+    // Charger le classement local et l'afficher
+    function loadLeaderboard() {
+      const scores = JSON.parse(localStorage.getItem('quizScores') || '[]');
+      const tbody = document.querySelector('#score-table tbody');
+      // Effacer les anciennes lignes
+      while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+      }
+      scores.forEach((item, index) => {
+        const row = document.createElement('tr');
+        const rankCell = document.createElement('td');
+        rankCell.innerText = index + 1;
+        const dateCell = document.createElement('td');
+        dateCell.innerText = item.date;
+        const scoreCell = document.createElement('td');
+        scoreCell.innerText = item.score + '%';
+        row.appendChild(rankCell);
+        row.appendChild(dateCell);
+        row.appendChild(scoreCell);
+        tbody.appendChild(row);
+      });
+    }
+
+    nextButton.addEventListener('click', () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < shuffledQuestions.length) {
+        showQuestion();
+      } else {
+        showScore();
+      }
+    });
 
     function setStatusClass(element, correct) {
       clearStatusClass(element);
       if (correct) {
-        element.style.backgroundColor = '#4CAF50';
+        element.style.backgroundColor = 'var(--success-color)';
         element.style.color = '#ffffff';
       } else {
-        element.style.backgroundColor = '#f44336';
+        element.style.backgroundColor = 'var(--danger-color)';
         element.style.color = '#ffffff';
       }
     }
@@ -458,34 +786,42 @@
       element.style.color = '';
     }
 
-    nextButton.addEventListener('click', () => {
-      currentQuestionIndex++;
-      showQuestion();
-    });
-
-    restartButton.addEventListener('click', startQuiz);
+    function showAnimation(type) {
+      animationContainer.innerHTML = '';
+      const shapeEl = document.createElement('div');
+      // Harmoniser le nom de type : "quadrilatère" utilise "quadrilataire" dans CSS
+      let typeClass = type;
+      if (type === 'quadrilatère') typeClass = 'quadrilataire';
+      shapeEl.classList.add('shape', typeClass, 'rotate');
+      animationContainer.appendChild(shapeEl);
+    }
 
     function showScore() {
-      document.getElementById('quiz-container').classList.add('hidden');
-      resultContainer.classList.remove('hidden');
-      // Met à jour la barre de progression à 100 %
+      quizSection.classList.add('hidden');
+      resultContainerEl.classList.remove('hidden');
       progressBar.style.width = '100%';
       progressText.innerText = `${shuffledQuestions.length}/${shuffledQuestions.length}`;
-      scoreElement.innerText = `Vous avez obtenu ${score} sur ${shuffledQuestions.length} !`;
+      const percentage = Math.round((score / shuffledQuestions.length) * 100);
+      scoreElement.innerText = `Vous avez obtenu ${score}/${shuffledQuestions.length} (${percentage} %)`;
+      // Attribuer un badge selon le pourcentage
+      let badgeText = '';
+      if (percentage >= 100) {
+        badgeText = '🏅 Badge Or : Parfait !';
+      } else if (percentage >= 80) {
+        badgeText = '🥈 Badge Argent : Excellent !';
+      } else if (percentage >= 60) {
+        badgeText = '🥉 Badge Bronze : Bon travail !';
+      } else {
+        badgeText = 'Continuez à vous entraîner !';
+      }
+      document.getElementById('badge').innerText = badgeText;
+      // Sauvegarder le score dans le classement local
+      saveScore(percentage);
+      loadLeaderboard();
+      document.getElementById('leaderboard').classList.remove('hidden');
     }
 
-    document.addEventListener('DOMContentLoaded', startQuiz);
-
-    // Enregistrement du service worker pour activer les fonctionnalités PWA et l'installation sur l'écran d'accueil
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('service-worker.js')
-          .catch((error) => {
-            console.error('Service Worker registration failed:', error);
-          });
-      });
-    }
+    // L'écran d'introduction s'affiche par défaut
   </script>
 </body>
 </html>
