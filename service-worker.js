@@ -1,13 +1,21 @@
-// Service Worker pour la mise en cache des ressources du quiz de géométrie
-const CACHE_NAME = 'geometry-quiz-v1';
+// Version 2 of the service worker for the geometry quiz PWA
+// This file defines a new cache name and updates the list of assets
+// to cache. Updating the cache name ensures that the browser will
+// discard the previous cache and fetch the latest resources. The
+// assets list includes both the root and specific HTML pages along
+// with the manifest and icon files.
+
+const CACHE_NAME = 'geometry-quiz-v2';
 const ASSETS_TO_CACHE = [
   './',
+  './index.html',
   './index_simple.html',
   './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icon-192.png',
+  './icon-512.png'
 ];
 
+// Pre-cache the defined assets when the service worker installs.
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -16,6 +24,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Remove old caches when activating the new service worker.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -28,6 +37,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Respond to fetch events with cached assets or fall back to the network.
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
